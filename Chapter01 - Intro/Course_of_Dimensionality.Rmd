@@ -122,7 +122,9 @@ dists %>%
   }) %>% bind_rows() -> distCases
 
 ggplot(distCases, aes(x=dist, y=pct)) +
-  geom_line() + theme_bw()
+  geom_line() +
+  geom_hline(yintercept = 0.1, linetype="dotted") + 
+  theme_bw()
 
 distCases %>%
   filter( pct <= .1 ) %>%
@@ -132,7 +134,7 @@ print(twoDim10pct)
 
 ```
 
-The distance to get 10% of data points are `r twoDim10pct$dist` in size, almost twice the original range in one dimention.
+The distance to get 10% of data points are `r twoDim10pct$dist` in size, about twice the original range in one dimention.
 
 ```{r twoDim20Pct}
 dt %>%
@@ -179,6 +181,18 @@ dists %>%
 
 multDimCases %>%
   ggplot(aes(x=dist, y=cover_pct, colour=dimensions)) +
-  geom_line() + theme_bw() 
+  geom_line() +
+  geom_hline(yintercept = 0.1, linetype="dotted") + 
+  theme_bw() 
+```
+
+The distances to capture 10% of data points along the 5 dimension.
+
+```{r distAt10}
+multDimCases %>% 
+  group_by(dimensions) %>%
+  filter( cover_pct <= 0.1 ) %>%
+  filter( cover_pct == max(cover_pct) ) %>%
+  select( dimensions, dist ) %>% print()
 ```
 

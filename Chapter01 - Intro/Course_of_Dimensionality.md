@@ -47,7 +47,7 @@ x_dist
 
 ```
 ##      10% 
-## 9.743032
+## 10.39658
 ```
 
 We can see that in one dimention the size of the range necessary to get 10% of the datapoints are around 10% of this dimentions (uniform distributed)
@@ -81,12 +81,12 @@ dt %>%
 ```
 
 ```
-## [1] 103
+## [1] 111
 ```
 
 ## Two Dimension
 
-Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: ``9.7430323``, but in this case, we need to check points around ```(x=50, y=50)```.
+Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: ``10.3965795``, but in this case, we need to check points around ```(x=50, y=50)```.
 
 
 ```r
@@ -144,7 +144,9 @@ dists %>%
   }) %>% bind_rows() -> distCases
 
 ggplot(distCases, aes(x=dist, y=pct)) +
-  geom_line() + theme_bw()
+  geom_line() +
+  geom_hline(yintercept = 0.1, linetype="dotted") + 
+  theme_bw()
 ```
 
 ![](Course_of_Dimensionality_files/figure-html/coverageTwoDim-1.png)<!-- -->
@@ -161,10 +163,10 @@ print(twoDim10pct)
 ## # A tibble: 1 x 3
 ##    dist points    pct
 ##   <int>  <int>  <dbl>
-## 1    16     89 0.0890
+## 1    16     84 0.0840
 ```
 
-The distance to get 10% of data points are 16 in size, almost twice the original range in one dimention.
+The distance to get 10% of data points are 16 in size, about twice the original range in one dimention.
 
 
 ```r
@@ -214,8 +216,33 @@ dists %>%
 
 multDimCases %>%
   ggplot(aes(x=dist, y=cover_pct, colour=dimensions)) +
-  geom_line() + theme_bw() 
+  geom_line() +
+  geom_hline(yintercept = 0.1, linetype="dotted") + 
+  theme_bw() 
 ```
 
 ![](Course_of_Dimensionality_files/figure-html/aditionalDim-1.png)<!-- -->
+
+The distances to capture 10% of data points along the 5 dimension.
+
+
+```r
+multDimCases %>% 
+  group_by(dimensions) %>%
+  filter( cover_pct <= 0.1 ) %>%
+  filter( cover_pct == max(cover_pct) ) %>%
+  select( dimensions, dist ) %>% print()
+```
+
+```
+## # A tibble: 5 x 2
+## # Groups: dimensions [5]
+##   dimensions  dist
+##   <fctr>     <int>
+## 1 d1             4
+## 2 d2            16
+## 3 d3            28
+## 4 d4            37
+## 5 d5            45
+```
 
