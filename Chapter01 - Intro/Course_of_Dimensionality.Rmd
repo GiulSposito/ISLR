@@ -6,7 +6,7 @@ output:
     keep_md: true
 ---
 
-## Ond Dimension
+## One Dimension
 
 This R Notebook reproduces the _Course of Dimensionality_ that is defined as the increasing of the interval size to get 10% of the data acording with the increasing of dimentions. So acording more dimentions are add to the domain, greater is the size of the range to get the same proportion of datapoints. Conforming we increase the size of the range we lost "locality" of the information, losing the capacity to resume the information with a simple average.
 
@@ -128,13 +128,13 @@ distCases %>%
   filter( pct <= .1 ) %>%
   filter( pct == max(pct) ) -> twoDim10pct
 
-twoDim10pct
+print(twoDim10pct)
 
 ```
 
 The distance to get 10% of data points are `r twoDim10pct$dist` in size, almost twice the original range in one dimention.
 
-```{r}
+```{r twoDim20Pct}
 dt %>%
   mutate(
     in_interval = case_when(

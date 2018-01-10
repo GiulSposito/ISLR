@@ -6,7 +6,7 @@ output:
     keep_md: true
 ---
 
-## Ond Dimension
+## One Dimension
 
 This R Notebook reproduces the _Course of Dimensionality_ that is defined as the increasing of the interval size to get 10% of the data acording with the increasing of dimentions. So acording more dimentions are add to the domain, greater is the size of the range to get the same proportion of datapoints. Conforming we increase the size of the range we lost "locality" of the information, losing the capacity to resume the information with a simple average.
 
@@ -47,7 +47,7 @@ x_dist
 
 ```
 ##      10% 
-## 9.233336
+## 9.743032
 ```
 
 We can see that in one dimention the size of the range necessary to get 10% of the datapoints are around 10% of this dimentions (uniform distributed)
@@ -81,12 +81,12 @@ dt %>%
 ```
 
 ```
-## [1] 94
+## [1] 103
 ```
 
 ## Two Dimension
 
-Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: ``9.2333364``, but in this case, we need to check points around ```(x=50, y=50)```.
+Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: ``9.7430323``, but in this case, we need to check points around ```(x=50, y=50)```.
 
 
 ```r
@@ -120,10 +120,10 @@ sel_points
 ```
 
 ```
-## [1] 32
+## [1] 34
 ```
 
-In fact, with the new distance, we can only reach 3.2 % of the datapoints adding one dimention. Can we find how much be the size of the radius to get 10% of the points?
+In fact, with the new distance, we can only reach 3.4 % of the datapoints adding one dimention. Can we find how much be the size of the radius to get 10% of the points?
 
 
 ```r
@@ -154,16 +154,17 @@ distCases %>%
   filter( pct <= .1 ) %>%
   filter( pct == max(pct) ) -> twoDim10pct
 
-twoDim10pct
+print(twoDim10pct)
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["dist"],"name":[1],"type":["int"],"align":["right"]},{"label":["points"],"name":[2],"type":["int"],"align":["right"]},{"label":["pct"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"18","2":"99","3":"0.099"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+```
+## # A tibble: 1 x 3
+##    dist points    pct
+##   <int>  <int>  <dbl>
+## 1    16     89 0.0890
+```
 
-The distance to get 10% of data points are 18 in size, almost twice the original range in one dimention.
+The distance to get 10% of data points are 16 in size, almost twice the original range in one dimention.
 
 
 ```r
@@ -180,7 +181,7 @@ ggplot(dt, aes(x=x, y=y, colour=in_interval)) +
   theme_bw()
 ```
 
-![](Course_of_Dimensionality_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
+![](Course_of_Dimensionality_files/figure-html/twoDim20Pct-1.png)<!-- -->
 
 ## More dimentions
 
