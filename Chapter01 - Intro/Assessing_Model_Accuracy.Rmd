@@ -1,0 +1,148 @@
+---
+title: "Assessing Model Accuracy"
+output:
+  html_document:
+    df_print: paged
+---
+
+## Introduction
+
+This article talks about the use of **Mean Squared Error (MSE)** against the flexibility of a function fited as a technique to assess the model accuracy in a specific problem as describe in the [An Introduction to Statistical Learning in R](https://www.amazon.com/Introduction-Statistical-Learning-Applications-Statistics/dp/1461471370) book.
+
+## Measure the quality of fit (regression problems)
+
+In order to evaluate the performance of a statistical learning method on a given data set, we need some way to measure how well its predictions actually match the observed data. That is, we need to quantify the extent to which the predicted response value for a given observation is close to the true response value for that observation. 
+
+In the **regression setting**, the most commonly-used measure is the mean squared error (MSE), given by:
+
+$$ MSE = \frac{1}{N}\sum_{i=1}^{n}(y_i-\hat{f}(x_i))^2 $$ 
+
+Where $\hat{f}(x_i)$ is the predicted (or fitted) function at x~i~ and y~i~ is the real value.
+
+So, the MSE is computed using the training data that was used to fit the model, and so should more accurately be referred to as the training MSE, but we want to evaluate the performance of the  $\hat{f}()$ against the unkwon data points, so we also compute MSE in an _test set_ with data points different from used to fit the $\hat{f}()$, now we have a MSE~tr~ for training points and a MSE~ts for test set.
+
+We want to choose the method that gives the lowest test MSE, as opposed to the lowest training MSE (MSE~ts~).
+
+## Comparing MSE~tr~ and MSE~ts
+
+Let's simulate some situations to see how MSE~tr~ and MSE~ts against diferent fitting techniques, we'll use polinomials fit to simplify the cenarios.
+
+```{r setup, message=FALSE, warning=FALSE}
+# setup
+library(ggplot2)
+library(tidyverse)
+```
+
+
+```{r caseOne}
+# some constants to parametrize the 
+A <- 1/5
+B <- 1/80
+C <- 1/40
+N <- 3/40
+DOMAIN <- 1:100
+
+# real function to be found (second degree in these case)
+f <- function(x) A*sin(15-x*(2*pi/100))+B*x+C
+
+# noise 
+noise <- function(x) N*rnorm(x,sd=1)
+
+# dataset
+dt <- data_frame(
+  x = DOMAIN,
+  f = f(DOMAIN)
+  ) %>%
+  # adding noise
+  mutate(
+    y = f + noise(DOMAIN)
+  )
+
+# separing in training and testing
+idx.tr <- sample(DOMAIN,round(length(DOMAIN)/2))
+dt_tr <- dt[idx.tr,]
+dt_ts <- dt[-idx.tr,]
+
+#  visualizing
+ggplot(dt_tr, aes(x=x)) +
+  geom_point(aes(y=y)) +
+  geom_line(aes(y=f), linetype="dotted") +
+  theme_bw()
+
+
+```
+
+Let's fit some cases in these datasets, we will use an linear regration, and some polinomial data.
+
+
+```{r fitCaseOne}
+
+f1 <- lm(y~x,dt_tr)
+f2 <- lm(y ~ poly(x, 2, raw=TRUE), dt_tr)
+f3 <- lm(y ~ poly(x, 3, raw=TRUE), dt_tr)
+f5 <- lm(y ~ poly(x, 5, raw=TRUE), dt_tr)
+f10 <- lm(y ~ poly(x, 10, raw=TRUE), dt_tr)
+f50 <- lm(y ~ poly(x, 50, raw=TRUE), dt_tr)
+
+
+dt_tr <- dt_tr %>%
+  mutate(
+    y1 = f1$fitted.values,
+    y2 = f2$fitted.values,
+    y3 = f3$fitted.values,
+    y5 = f5$fitted.values,
+    y10 = f10$fitted.values,
+    y50 = f50$fitted.values
+  )
+
+ggplot(dt_tr, aes(x=x)) +
+  geom_point(aes(y=y)) +
+  geom_line(aes(y=f), colour="black", linetype="solid") +
+  geom_line(aes(y=y1), colour="red") +
+  geom_line(aes(y=y2), colour="blue") +
+  geom_line(aes(y=y3), colour="purple") +
+  geom_line(aes(y=y5), colour="green") +
+  geom_line(aes(y=y10), colour="yellow") +
+  geom_line(aes(y=y50), colour="brown") +
+  theme_bw()
+```
+
+We see in this chart, the real data points (points), the real function (continuous black line) and diferent fitting curves (colored lines) from 1 degree to 50 degree. Now let's see the performances of these models, calculating and ploting MSE on training and testing sets.
+
+```{r perfCaseOne, warning=FALSE}
+
+# calc MSE from the residuals of the model
+getMSE <- function(lm.model) sum(lm.model$residuals^2)/length(lm.model$residuals)
+
+# calc MSE to the training set in a model
+calcMSE <- function(lm.model, newdata){
+  y_hat <- predict(lm.model, newdata=newdata)
+  mse <- (1/length(y_hat))*sum( (newdata$y-y_hat)^2 )
+  return(mse)
+}
+
+calcFormulaMSE <- function(newdata,formula) {
+  y_hat <- formula(newdata$x)
+  mse <- (1/length(y_hat))*sum( (newdata$y-y_hat)^2 )
+  return(mse)
+}
+
+perf <- data_frame(
+  flexibility = c(2,3,4,6,11),
+  MSEtr = c(getMSE(f1),getMSE(f2),getMSE(f3),getMSE(f5),getMSE(f10)),
+  MSEts = c(calcMSE(f1,dt_ts),calcMSE(f2,dt_ts),calcMSE(f3,dt_ts),
+            calcMSE(f5,dt_ts),calcMSE(f10,dt_ts))
+)
+
+MSEf <- calcFormulaMSE(dt_ts, f)
+
+ggplot(perf,aes(x=flexibility)) +
+  geom_line(aes(y=MSEtr), colour="red") +
+  geom_line(aes(y=MSEts), colour="blue") +
+  geom_hline(yintercept = MSEf, linetype="dashed") +
+  theme_bw()
+
+```
+
+
+
