@@ -28,7 +28,8 @@ We want to choose the method that gives the lowest test MSE, as opposed to the l
 
 Let's simulate some situations to see how MSE~tr~ and MSE~ts against diferent fitting techniques, we'll use polinomials fit to simplify the cenarios.
 
-```{r setup, message=FALSE, warning=FALSE}
+
+```r
 # setup
 library(ggplot2)
 library(tidyverse)
@@ -36,7 +37,8 @@ library(reshape2)
 ```
 
 
-```{r caseOne}
+
+```r
 DOMAIN <- 1:100
 
 # function linear gausian noise sd=1
@@ -62,14 +64,15 @@ ggplot(dt_tr, aes(x=x)) +
   geom_point(aes(y=y)) +
   geom_line(aes(y=f), linetype="dotted") +
   theme_bw()
-
 ```
+
+![](Assessing_Model_Accuracy_files/figure-html/caseOne-1.png)<!-- -->
 
 Let's fit some cases in these datasets, we will use an linear regration, and some polinomial data.
 
 
-```{r fitCaseOne}
 
+```r
 degrees <- c(1,2,3,5,10)
 
 fitPoly <- function(degree,data){
@@ -91,13 +94,14 @@ ggplot(dt_tr_long) +
   geom_line(data=dt_tr_long[dt_tr_long$model!="y",], aes(x=x, y=fitted, colour=model)) +
   geom_point(data=dt_tr_long[dt_tr_long$model=="y",], aes(x=x,y=fitted)) +
   theme_bw()
-
 ```
+
+![](Assessing_Model_Accuracy_files/figure-html/fitCaseOne-1.png)<!-- -->
 
 We see in this chart, the real data points (points), the real function (continuous black line) and diferent fitting curves (colored lines) from 1 degree to 50 degree. Now let's see the performances of these models, calculating and ploting MSE on training and testing sets.
 
-```{r perfCaseOne, warning=FALSE}
 
+```r
 # calc MSE from the residuals of the model
 getMSE <- function(lm.model) sum(lm.model$residuals^2)/length(lm.model$residuals)
 
@@ -123,8 +127,9 @@ ggplot(perf,aes(x=degree)) +
   geom_hline(yintercept = MSE, linetype="dashed") +
   ylab("MSE") +
   theme_bw()
-
 ```
+
+![](Assessing_Model_Accuracy_files/figure-html/perfCaseOne-1.png)<!-- -->
 
 
 
