@@ -6,11 +6,19 @@ output:
     keep_md: true
 ---
 
-## One Dimension
+## Introduction
 
-This R Notebook reproduces the _Curse of Dimensionality_[^1] in the _nearest neighbor regression_ that here is defined as *the increasing of the interval size* to get 10% of the data *acording with the increasing of dimentions*. So acording more dimentions are add to the domain, greater is the size of the range to get the same proportion of datapoints. Conforming we increase the size of the range we lost "locality" of the information, losing the capacity to resume the information with a simple average.
+This R Notebook reproduces the **Curse of Dimensionality**[^1] in the _nearest neighbor regression_ that here is defined as *the increasing of the interval size* to get 10% of the data *acording with the increasing of dimentions*. So according more dimensions are add to the domain, greater is the size of the range to get the same proportion of data points. Conforming we increase the size of the range we lost "locality" of the information, losing the capacity to resume the information with a simple average.
 
-Let's see this in 1 and 2 dimensions.
+## Nearest Neighbor Moving Average
+
+In this article, the _curse of dimensionality_ comes from try to use of _Nearest Neighbor_ as predictors for a function. We iteratively select 10% of nearest points in the dataset at a specific point X~0~ and calculates the average of these points to use as the result of  prediction of a function in at the X~0~ point.
+
+With lower dimensionality (around 4) and a great number of sample this is a great technique and easy to use, to compute and to interpret, but according the number of dimensions increase, we loose the locality of the information because to get 10% of the points we need do increase the interval arount the X~0~. Let's see this effect in a simulation data.
+
+## Dataset
+
+Let's build a 5 dimensional data set 
 
 
 ```r
@@ -37,7 +45,7 @@ ggplot(dt, aes(x=x, y=y)) + geom_point() + coord_fixed(ratio = 1) + theme_bw()
 
 ![](Curse_of_Dimensionality_files/figure-html/one_dim-1.png)<!-- -->
 
-Let's supose that we need to get 10% of points around `x=50` (100 points), what is the size of interval necessary to get these points?
+Let's suppose that we need to get 10% of points around `x=50` (100 points), what is the size of interval necessary to get these points?
 
 
 ```r
@@ -46,11 +54,11 @@ x_dist
 ```
 
 ```
-##      10% 
-## 9.166418
+##     10% 
+## 9.25175
 ```
 
-We can see that in one dimention the size of the range necessary to get 10% of the datapoints are around 10% of this dimentions (uniform distributed)
+We can see that in one dimension the size of the range necessary to get 10% of the data points are around 10% of this dimensions (uniform distributed)
 
 
 ```r
@@ -81,12 +89,12 @@ dt %>%
 ```
 
 ```
-## [1] 80
+## [1] 87
 ```
 
 ## Two Dimension
 
-Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: 9.1664177, but in this case, we need to check points around `(x=50, y=50)`.
+Now, lets see the case in two dimensions, first we'll use the same interval found in one dimension case: 9.2517502, but in this case, we need to check points around `(x=50, y=50)`.
 
 
 ```r
@@ -105,7 +113,7 @@ ggplot(dt, aes(x=x, y=y, colour=in_interval)) +
 
 ![](Curse_of_Dimensionality_files/figure-html/twodim-1.png)<!-- -->
 
-Now wee see that the number of point get in this range is significantly lower than previus case.
+Now wee see that the number of point get in this range is significantly lower than previous case.
 
 
 ```r
@@ -120,10 +128,10 @@ sel_points
 ```
 
 ```
-## [1] 23
+## [1] 31
 ```
 
-In fact, with the new distance, we can only reach 2.3 % of the datapoints adding one dimention. Can we find how much be the size of the radius to get 10% of the points?
+In fact, with the new distance, we can only reach 3.1 % of the data points adding one dimension. Can we find how much be the size of the radius to get 10% of the points?
 
 
 ```r
@@ -163,10 +171,10 @@ print(twoDim10pct)
 ## # A tibble: 1 x 3
 ##    dist points    pct
 ##   <int>  <int>  <dbl>
-## 1    17     95 0.0950
+## 1    17     91 0.0910
 ```
 
-The distance to get 10% of data points are 17 in size, about twice the original range in one dimention.
+The distance to get 10% of data points are 17 in size, about twice the original range in one dimension.
 
 
 ```r
@@ -187,7 +195,7 @@ ggplot(dt, aes(x=x, y=y, colour=in_interval)) +
 
 ## More dimentions
 
-We can generalize and see the impact in the size of range along the adicional dimension?
+We can generalize and see the impact in the size of range along the additional dimension?
 
 
 ```r
@@ -241,10 +249,13 @@ multDimCases %>%
 ##   <fctr>     <int>
 ## 1 d1             5
 ## 2 d2            17
-## 3 d3            28
-## 4 d4            36
+## 3 d3            29
+## 4 d4            37
 ## 5 d5            45
 ```
 
+## Conclusion
 
-^1: https://en.wikipedia.org/wiki/Curse_of_dimensionality
+We can see cleary how the effect of the increase of the data dimensionality afects the size of interval, at 5-dimensions is necessary that half of total lenght of data points to get 10% of the data set, destroying the "locality" information. 
+
+[^1]: https://en.wikipedia.org/wiki/Curse_of_dimensionality
