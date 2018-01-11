@@ -1,5 +1,5 @@
 ---
-title: "Course of Dimensinality"
+title: "Curse of Dimensinality"
 output:
   html_document:
     df_print: paged
@@ -8,7 +8,7 @@ output:
 
 ## One Dimension
 
-This R Notebook reproduces the _Course of Dimensionality_ that is defined as the increasing of the interval size to get 10% of the data acording with the increasing of dimentions. So acording more dimentions are add to the domain, greater is the size of the range to get the same proportion of datapoints. Conforming we increase the size of the range we lost "locality" of the information, losing the capacity to resume the information with a simple average.
+This R Notebook reproduces the **Curse of Dimensionality**[^1] in the _nearest neighbor regression_ that here is defined as *the increasing of the interval size* to get 10% of the data *acording with the increasing of dimentions*. So acording more dimentions are add to the domain, greater is the size of the range to get the same proportion of datapoints. Conforming we increase the size of the range we lost "locality" of the information, losing the capacity to resume the information with a simple average.
 
 Let's see this in 1 and 2 dimensions.
 
@@ -34,7 +34,7 @@ ggplot(dt, aes(x=x, y=y)) + geom_point() + coord_fixed(ratio = 1) + theme_bw()
 
 ```
 
-Let's supose that we need to get 10% of points around ```x=50``` (100 points), what is the size of interval necessary to get these points?
+Let's supose that we need to get 10% of points around `x=50` (100 points), what is the size of interval necessary to get these points?
 
 ```{r find_10pct}
 x_dist <- quantile(x=dt$x,probs = .1)
@@ -70,7 +70,7 @@ dt %>%
 
 ## Two Dimension
 
-Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: ```r x_dist```, but in this case, we need to check points around ```(x=50, y=50)```.
+Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: `r x_dist`, but in this case, we need to check points around `(x=50, y=50)`.
 
 ```{r twodim}
 
@@ -196,3 +196,5 @@ multDimCases %>%
   select( dimensions, dist ) %>% print()
 ```
 
+
+[^1]: https://en.wikipedia.org/wiki/Curse_of_dimensionality

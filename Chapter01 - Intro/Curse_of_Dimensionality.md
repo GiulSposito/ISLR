@@ -1,5 +1,5 @@
 ---
-title: "Course of Dimensinality"
+title: "Curse of Dimensinality"
 output:
   html_document:
     df_print: paged
@@ -8,7 +8,7 @@ output:
 
 ## One Dimension
 
-This R Notebook reproduces the _Course of Dimensionality_ that is defined as the increasing of the interval size to get 10% of the data acording with the increasing of dimentions. So acording more dimentions are add to the domain, greater is the size of the range to get the same proportion of datapoints. Conforming we increase the size of the range we lost "locality" of the information, losing the capacity to resume the information with a simple average.
+This R Notebook reproduces the _Curse of Dimensionality_[^1] in the _nearest neighbor regression_ that here is defined as *the increasing of the interval size* to get 10% of the data *acording with the increasing of dimentions*. So acording more dimentions are add to the domain, greater is the size of the range to get the same proportion of datapoints. Conforming we increase the size of the range we lost "locality" of the information, losing the capacity to resume the information with a simple average.
 
 Let's see this in 1 and 2 dimensions.
 
@@ -35,9 +35,9 @@ dt <- data_frame(
 ggplot(dt, aes(x=x, y=y)) + geom_point() + coord_fixed(ratio = 1) + theme_bw()
 ```
 
-![](Course_of_Dimensionality_files/figure-html/one_dim-1.png)<!-- -->
+![](Curse_of_Dimensionality_files/figure-html/one_dim-1.png)<!-- -->
 
-Let's supose that we need to get 10% of points around ```x=50``` (100 points), what is the size of interval necessary to get these points?
+Let's supose that we need to get 10% of points around `x=50` (100 points), what is the size of interval necessary to get these points?
 
 
 ```r
@@ -47,7 +47,7 @@ x_dist
 
 ```
 ##      10% 
-## 10.39658
+## 9.166418
 ```
 
 We can see that in one dimention the size of the range necessary to get 10% of the datapoints are around 10% of this dimentions (uniform distributed)
@@ -71,7 +71,7 @@ ggplot(dt, aes(x=x, y=y, colour=in_interval)) +
   coord_fixed(ratio = 1) + theme_bw()
 ```
 
-![](Course_of_Dimensionality_files/figure-html/get10pct-1.png)<!-- -->
+![](Curse_of_Dimensionality_files/figure-html/get10pct-1.png)<!-- -->
 
 ```r
 # how much points?
@@ -81,12 +81,12 @@ dt %>%
 ```
 
 ```
-## [1] 111
+## [1] 80
 ```
 
 ## Two Dimension
 
-Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: ``10.3965795``, but in this case, we need to check points around ```(x=50, y=50)```.
+Now, lets see the case in two dimentions, firts we'll use the same interval found in one dimention case: 9.1664177, but in this case, we need to check points around `(x=50, y=50)`.
 
 
 ```r
@@ -103,7 +103,7 @@ ggplot(dt, aes(x=x, y=y, colour=in_interval)) +
   geom_point() + coord_fixed(ratio = 1) + theme_bw()
 ```
 
-![](Course_of_Dimensionality_files/figure-html/twodim-1.png)<!-- -->
+![](Curse_of_Dimensionality_files/figure-html/twodim-1.png)<!-- -->
 
 Now wee see that the number of point get in this range is significantly lower than previus case.
 
@@ -120,10 +120,10 @@ sel_points
 ```
 
 ```
-## [1] 34
+## [1] 23
 ```
 
-In fact, with the new distance, we can only reach 3.4 % of the datapoints adding one dimention. Can we find how much be the size of the radius to get 10% of the points?
+In fact, with the new distance, we can only reach 2.3 % of the datapoints adding one dimention. Can we find how much be the size of the radius to get 10% of the points?
 
 
 ```r
@@ -149,7 +149,7 @@ ggplot(distCases, aes(x=dist, y=pct)) +
   theme_bw()
 ```
 
-![](Course_of_Dimensionality_files/figure-html/coverageTwoDim-1.png)<!-- -->
+![](Curse_of_Dimensionality_files/figure-html/coverageTwoDim-1.png)<!-- -->
 
 ```r
 distCases %>%
@@ -163,10 +163,10 @@ print(twoDim10pct)
 ## # A tibble: 1 x 3
 ##    dist points    pct
 ##   <int>  <int>  <dbl>
-## 1    16     84 0.0840
+## 1    17     95 0.0950
 ```
 
-The distance to get 10% of data points are 16 in size, about twice the original range in one dimention.
+The distance to get 10% of data points are 17 in size, about twice the original range in one dimention.
 
 
 ```r
@@ -183,7 +183,7 @@ ggplot(dt, aes(x=x, y=y, colour=in_interval)) +
   theme_bw()
 ```
 
-![](Course_of_Dimensionality_files/figure-html/twoDim20Pct-1.png)<!-- -->
+![](Curse_of_Dimensionality_files/figure-html/twoDim20Pct-1.png)<!-- -->
 
 ## More dimentions
 
@@ -221,7 +221,7 @@ multDimCases %>%
   theme_bw() 
 ```
 
-![](Course_of_Dimensionality_files/figure-html/aditionalDim-1.png)<!-- -->
+![](Curse_of_Dimensionality_files/figure-html/aditionalDim-1.png)<!-- -->
 
 The distances to capture 10% of data points along the 5 dimension.
 
@@ -239,10 +239,12 @@ multDimCases %>%
 ## # Groups: dimensions [5]
 ##   dimensions  dist
 ##   <fctr>     <int>
-## 1 d1             4
-## 2 d2            16
+## 1 d1             5
+## 2 d2            17
 ## 3 d3            28
-## 4 d4            37
+## 4 d4            36
 ## 5 d5            45
 ```
 
+
+^1: https://en.wikipedia.org/wiki/Curse_of_dimensionality
