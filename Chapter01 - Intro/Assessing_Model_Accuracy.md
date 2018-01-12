@@ -28,6 +28,8 @@ We want to choose the method that gives the lowest test MSE, as opposed to the l
 
 Let's simulate some situations to see how MSE~tr~ and MSE~ts against diferent fitting techniques, we'll use polinomials fit to simplify the cenarios.
 
+### Curve 1
+
 
 ```r
 # setup
@@ -131,5 +133,86 @@ ggplot(perf,aes(x=degree)) +
 
 ![](Assessing_Model_Accuracy_files/figure-html/perfCaseOne-1.png)<!-- -->
 
+We can see the behavior of MSE data, in the training data (Red) the incresing of the flexibility of the fit (degree in this case) will cause a continuos decreasing in the MSE value, but in the MSE of the test data we have a initial decreasing until some minimal value (de optimal fit) and then a increasing, showing that model overfitting the training set.
 
+
+
+### Courve 2
+
+Another example.
+
+
+```r
+DOMAIN <- runif(100, 1, 100)
+
+# function linear gausian noise sd=1
+f <- function(x) (-sin( (2*pi/length(DOMAIN)) * (x+10) )) * 2*x/100 + 0.001 * x
+noise <- function(x) 0.3*rnorm(x)
+
+data_frame(
+  x = DOMAIN,
+  f = f(x)
+) %>%
+  # adding noise
+  mutate(
+    y = f + noise(DOMAIN)
+  ) -> dt
+
+# separing in training and testing
+idx.tr <- sample(DOMAIN,round(length(DOMAIN)/2))
+dt_tr <- dt[idx.tr,]
+dt_ts <- dt[-idx.tr,]
+
+#  visualizing training data
+ggplot(dt_tr, aes(x=x)) +
+  geom_point(aes(y=y)) +
+  geom_line(aes(y=f), linetype="dotted") +
+  theme_bw()
+```
+
+![](Assessing_Model_Accuracy_files/figure-html/caseTwo-1.png)<!-- -->
+
+
+```r
+degrees <- c(1,2,3,5,10)
+
+models <- map(degrees, fitPoly, data=dt_tr)
+
+models %>%
+  map(function(model){model$fitted.values}) %>%
+  set_names(paste0("f",degrees)) %>%
+  as_data_frame() %>%
+  cbind(dt_tr, .) -> dt_tr_fit
+
+dt_tr_long <- dt_tr_fit %>%
+  melt(id.vars="x", variable.name="model", value.name = "fitted")
+
+ggplot(dt_tr_long) +
+  geom_line(data=dt_tr_long[dt_tr_long$model!="y",], aes(x=x, y=fitted, colour=model)) +
+  geom_point(data=dt_tr_long[dt_tr_long$model=="y",], aes(x=x,y=fitted)) +
+  theme_bw()
+```
+
+![](Assessing_Model_Accuracy_files/figure-html/fitCaseTwo-1.png)<!-- -->
+
+
+```r
+# performances
+perf <- data_frame(
+  degree = degrees,
+  MSE.tr = unlist(map(models, getMSE)),
+  MSE.ts = unlist(map(models, calcMSE, dt_ts))
+)
+
+MSE <- sum( (dt$y-dt$f)^2 ) / nrow(dt)
+
+ggplot(perf,aes(x=degree)) +
+  geom_line(aes(y=MSE.tr), colour="red") +
+  geom_line(aes(y=MSE.ts), colour="blue") +
+  geom_hline(yintercept = MSE, linetype="dashed") +
+  ylab("MSE") +
+  theme_bw()
+```
+
+![](Assessing_Model_Accuracy_files/figure-html/perfCaseTwo-1.png)<!-- -->
 
