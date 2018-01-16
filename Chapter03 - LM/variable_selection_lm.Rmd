@@ -1,0 +1,44 @@
+---
+title: "Variable Selection (linear models)"
+output:
+  html_document:
+    df_print: paged
+    keep_md: true
+---
+
+In this [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html) we will test exercise and eval some model selection strategies involving linear regration.
+
+## Data set
+
+We will use Boston dataset in the [MASS package](https://cran.r-project.org/web/packages/MASS/MASS.pdf) with the housing values in suburbs of Boston, the dataframe has 506 rows and 14 columns.
+
+```{r setup, warning=FALSE, error=FALSE, message=FALSE}
+# basic library
+library(MASS)
+library(tidyverse)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+
+# dataset
+bd <- Boston
+str(bd)
+```
+
+We'll try to stablish a model for variable `medv` (median value of owner-occupied homes in \$1000), using a linear/polynomial model of other variables. In this case, the number of variables is low (13) so it's possible see an overview of the relationship between them and the `medv`.
+
+```{r featurePlot}
+
+# what are the predictors?
+features <- names(bd)
+features <- features[features!="medv"] # removing target (y)
+
+map(features,function(feat,data=bd){
+  ggplot(data, aes_string(x=feat, y="medv")) +
+    geom_point() + theme_bw() + stat_smooth(method="lm") +  ylab("")
+}) -> featPlots
+
+marrangeGrob(featPlots, nrow=3, ncol=5)
+
+```
+
