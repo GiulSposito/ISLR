@@ -35,7 +35,7 @@ features <- features[features!="medv"] # removing target (y)
 
 map(features,function(feat,data=bd){
   ggplot(data, aes_string(x=feat, y="medv")) +
-    geom_point() + theme_bw() + stat_smooth(method="lm") +  ylab("")
+    geom_point() + theme_bw() + ylab("")
 }) -> featPlots
 
 marrangeGrob(featPlots, nrow=3, ncol=5)
